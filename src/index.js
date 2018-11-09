@@ -1,6 +1,8 @@
 const fs = require('fs');
 const readline = require('readline');
 const {google} = require('googleapis');
+const axios = require('axios');
+var convert = require('xml-js');
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
@@ -13,8 +15,53 @@ const TOKEN_PATH = 'token.json';
 fs.readFile('./../../../../phero/.credentials.json', (err, content) => {
   if (err) return console.log('Error loading client secret file:', err);
   // Authorize a client with credentials, then call the Google Sheets API.
-  authorize(JSON.parse(content), listMajors);
+//   axios.get('https://www.boardgamegeek.com/xmlapi/boardgame/133038?stats=1')
+//   .then(response => {
+//       //console.log(response.data);
+//       let jsonData = JSON.parse(convert.xml2json(response.data, {compact: true, spaces: 2, trim: true, ignoreDeclaration: true}));
+//       console.log(jsonData.boardgames.boardgame.statistics.ratings.average._text);
+//       fs.writeFile('bla.json', JSON.stringify(jsonData.boardgames.boardgame.statistics.ratings,0,2), (err) => {
+//         if (err) throw err;
+//         console.log('The file has been saved!');
+//       });
+//   })
+//   .catch(error => {
+//     console.log(error);
+//   });
+    let itemId = 889696002617;
+    var statusCode = 0;
+    axios.get(`https://www.idealo.de/preisvergleich/Typ/${itemId}`)
+    .then(response => {
+    console.log("bibba", response.status);
+    fs.writeFile('bla.html', response.data, (err) => {
+                if (err) //console.log(err);
+                console.log('The file has been saved!');
+              });
+    })
+        .catch(error => {
+        statusCode = error.response.status;
+        console.log(statusCode);
+        if(statusCode > 300){
+            axios.get(`https://www.idealo.de/preisvergleich/OffersOfProduct/${itemId}`)
+            .then(response => {
+            console.log("bibba", response.status);
+            fs.writeFile('bla.html', response.data, (err) => {
+                        if (err) //console.log(err);
+                        console.log('The file has been saved!');
+                      });
+            })
+                .catch(error => {
+                console.log(statusCode);
+            });
+        }    
+    });
+    
+    
+  //authorize(JSON.parse(content), listMajors);
 });
+
+//https://www.boardgamegeek.com/xmlapi/boardgame/133038?stats=1
+
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
@@ -90,15 +137,14 @@ async function listMajors(auth) {
       rows.slice(1,-1).forEach((item, index) => {
           console.log("item", item, index)
       });
-      rowCount = 11;
-      myLoop(rowCount, sheets);
+      //myLoop(rowCount, sheets);
       sortTable(auth, rowCount);
     } else {
         console.log('No data found.');
     }
 });
 }
-
+https://www.boardgamegeek.com/xmlapi2/boardgame?id=238458&stats=1
 function myLoop (rowCount, sheets) {           //  create a loop function
     setTimeout(function () {    //  call a 3s setTimeout when the loop is called
        
@@ -148,7 +194,7 @@ function sortTable(auth, rowCount){
                             "startRowIndex": 1,
                             "endRowIndex": rowCount,
                             "startColumnIndex": 0,
-                            "endColumnIndex": 6
+                            "endColumnIndex": 9
                         },
                         "sortSpecs": [
                             {
