@@ -2,7 +2,9 @@ const fs = require('fs');
 const readline = require('readline');
 const {google} = require('googleapis');
 const axios = require('axios');
-var convert = require('xml-js');
+const convert = require('xml-js');
+const cheerio = require('cheerio');
+
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
@@ -15,28 +17,35 @@ const TOKEN_PATH = 'token.json';
 fs.readFile('./../../../../phero/.credentials.json', (err, content) => {
   if (err) return console.log('Error loading client secret file:', err);
   // Authorize a client with credentials, then call the Google Sheets API.
-//   axios.get('https://www.boardgamegeek.com/xmlapi/boardgame/133038?stats=1')
-//   .then(response => {
-//       //console.log(response.data);
-//       let jsonData = JSON.parse(convert.xml2json(response.data, {compact: true, spaces: 2, trim: true, ignoreDeclaration: true}));
-//       console.log(jsonData.boardgames.boardgame.statistics.ratings.average._text);
-//       fs.writeFile('bla.json', JSON.stringify(jsonData.boardgames.boardgame.statistics.ratings,0,2), (err) => {
-//         if (err) throw err;
-//         console.log('The file has been saved!');
-//       });
-//   })
-//   .catch(error => {
-//     console.log(error);
-//   });
+  axios.get('https://www.boardgamegeek.com/xmlapi/boardgame/133038?stats=1')
+  .then(response => {
+      //console.log(response.data);
+      let jsonData = JSON.parse(convert.xml2json(response.data, {compact: true, spaces: 2, trim: true, ignoreDeclaration: true}));
+      console.log(jsonData.boardgames.boardgame.statistics.ratings.average._text);
+      fs.writeFile('bla.json', JSON.stringify(jsonData.boardgames.boardgame.statistics.ratings,0,2), (err) => {
+        if (err) throw err;
+        console.log('The file has been saved!');
+      });
+  })
+  .catch(error => {
+    console.log(error);
+  });
     let itemId = 889696002617;
     var statusCode = 0;
+    var idealoPage;
+
     axios.get(`https://www.idealo.de/preisvergleich/Typ/${itemId}`)
     .then(response => {
     console.log("bibba", response.status);
+    idealoPage = response.data;
     fs.writeFile('bla.html', response.data, (err) => {
                 if (err) //console.log(err);
                 console.log('The file has been saved!');
               });
+        let $ = cheerio.load(idealoPage);
+        let priceRange = $('.oopStage-priceRangePrice')[0].children[0].data
+        let price = priceRange.slice(0, priceRange.indexOf("€") - 1);
+        console.log(price);
     })
         .catch(error => {
         statusCode = error.response.status;
@@ -45,17 +54,20 @@ fs.readFile('./../../../../phero/.credentials.json', (err, content) => {
             axios.get(`https://www.idealo.de/preisvergleich/OffersOfProduct/${itemId}`)
             .then(response => {
             console.log("bibba", response.status);
+            idealoPage = response.data;
             fs.writeFile('bla.html', response.data, (err) => {
                         if (err) //console.log(err);
                         console.log('The file has been saved!');
                       });
+            let $ = cheerio.load(idealoPage);
+            console.log($);
             })
                 .catch(error => {
                 console.log(statusCode);
             });
         }    
+        
     });
-    
     
   //authorize(JSON.parse(content), listMajors);
 });
