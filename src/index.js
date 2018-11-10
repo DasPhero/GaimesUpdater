@@ -5,15 +5,49 @@ const axios = require('axios');
 const convert = require('xml-js');
 const cheerio = require('cheerio');
 
-
-// If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
-// The file token.json stores the user's access and refresh tokens, and is
-// created automatically when the authorization flow completes for the first
-// time.
 const TOKEN_PATH = 'token.json';
 
-// Load client secrets from a local file.
+function updateGames(){
+
+}
+
+function getCredentials(){
+
+}
+
+function authorize(){
+
+}
+
+function getCurrentSheet(){
+
+}
+
+function updateSheetRows(){
+
+}
+
+function getGameScore(){
+
+}
+
+function getGamePrice(){
+
+}
+
+function writeScoreToTable(){
+
+}
+
+function writePriceToTable(){
+
+}
+
+function sortTable(){
+
+}
+
 fs.readFile('./../../../../phero/.credentials.json', (err, content) => {
   if (err) return console.log('Error loading client secret file:', err);
   // Authorize a client with credentials, then call the Google Sheets API.
@@ -150,7 +184,7 @@ async function listMajors(auth) {
           console.log("item", item, index)
       });
       //myLoop(rowCount, sheets);
-      sortTable(auth, rowCount);
+      sortTablee(auth, rowCount);
     } else {
         console.log('No data found.');
     }
@@ -192,7 +226,7 @@ function myLoop (rowCount, sheets) {           //  create a loop function
     }, 1100)
  }
 
-function sortTable(auth, rowCount){
+function sortTablee(auth, rowCount){
     const sheets = google.sheets({version: 'v4', auth});
 
     var request = {
