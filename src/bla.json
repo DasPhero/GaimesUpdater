@@ -1,12 +1,12 @@
 {
   "usersrated": {
-    "_text": "10945"
+    "_text": "10947"
   },
   "average": {
-    "_text": "7.29076"
+    "_text": "7.29042"
   },
   "bayesaverage": {
-    "_text": "7.05044"
+    "_text": "7.05016"
   },
   "ranks": {
     "rank": [
@@ -16,8 +16,8 @@
           "id": "1",
           "name": "boardgame",
           "friendlyname": "Board Game Rank",
-          "value": "299",
-          "bayesaverage": "7.05044"
+          "value": "300",
+          "bayesaverage": "7.05016"
         }
       },
       {
@@ -27,31 +27,31 @@
           "name": "thematic",
           "friendlyname": "Thematic Rank",
           "value": "91",
-          "bayesaverage": "7.08065"
+          "bayesaverage": "7.0803"
         }
       }
     ]
   },
   "stddev": {
-    "_text": "1.58353"
+    "_text": "1.58363"
   },
   "median": {
     "_text": "0"
   },
   "owned": {
-    "_text": "16797"
+    "_text": "16800"
   },
   "trading": {
-    "_text": "864"
+    "_text": "866"
   },
   "wanting": {
-    "_text": "295"
+    "_text": "294"
   },
   "wishing": {
-    "_text": "2044"
+    "_text": "2048"
   },
   "numcomments": {
-    "_text": "2366"
+    "_text": "2368"
   },
   "numweights": {
     "_text": "673"
