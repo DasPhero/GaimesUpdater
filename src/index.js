@@ -13,7 +13,6 @@ const TOKEN_PATH = 'token.json';
 var credentials;
 var oAuth2Client;
 var sheetRows;
-
 var sheetData = [];
 
 function updateGames() {
@@ -55,8 +54,6 @@ function updateGames() {
     });
 }
 
-
-
 function getCredentials() {
     return new Promise((resolve, reject) => {
         fs.readFile('./../../../../phero/.credentials.json', (err, creds) => {
@@ -94,7 +91,6 @@ function authorize(callback, params) {
         });
     })
 }
-
 
 /**
  * Get and store new token after prompting for user authorization, and then
@@ -233,7 +229,7 @@ function sortTable(auth, resolve) {
                     "range": {
                         "sheetId": 0,
                         "startRowIndex": 1,
-                        "endRowIndex": sheetData.length,
+                        "endRowIndex": sheetData.length + 1,
                         "startColumnIndex": 0,
                         "endColumnIndex": 9
                     },
