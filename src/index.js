@@ -36,8 +36,7 @@ function updateGames() {
                 }).then((score) => {
                     sheetData[row.index - 2].bgg = score
                 });
-                //await new Promise((resolve) => { getGamePrice(row.idealo, resolve) }).then((price) => { sheetData[row.index - 2].idealo = price });
-                console.log("round", index, sheetData.slice(0, 10));
+                // await new Promise((resolve) => { getGamePrice(row.idealo, resolve) }).then((price) => { sheetData[row.index - 2].idealo = price });
                 bggCalls++;
                 if (bggCalls === sheetData.length) {
                     prom();
@@ -49,7 +48,15 @@ function updateGames() {
             return [row.bgg.replace(".", ",")];
         })
         return authorize(writeScoreToTable, scoreArray);
-    }).then(() => {
+    })
+    // .then(() => {
+    //     let priceArray = sheetData.map(row => {
+    //         return [row.idealo];
+    //     })
+    //     console.log(priceArray)
+    //     return authorize(writePriceToTable, priceArray);
+    // })
+    .then(() => {
         authorize(sortTable);
     });
 }
@@ -212,8 +219,27 @@ function writeScoreToTable(auth, scoreData, resolve) {
     });
 }
 
-function writePriceToTable(auth, resolve) {
+function writePriceToTable(auth, priceData, resolve) {
+    const sheets = google.sheets({
+        version: 'v4',
+        auth
+    });
 
+    var request = {
+        spreadsheetId: '1kMyNw3JYanUGsYIKsXEC--mz049cACOdfjvEBcBQiQA',
+        range: `B2`,
+        valueInputOption: 'USER_ENTERED',
+        resource: {
+            values: priceData
+        }
+    };
+    sheets.spreadsheets.values.update(request, function (err, response) {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        resolve();
+    });
 }
 
 function sortTable(auth, resolve) {
