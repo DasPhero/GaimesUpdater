@@ -1,0 +1,28 @@
+{
+  "name": "gaimesupdater",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "cheerio": "^1.0.0-rc.2",
+    "googleapis": "^27.0.0",
+    "xml-js": "^1.6.8",
+    "xml2js": "^0.4.19",
+    "npm": "^6.4.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DasPhero/GaimesUpdater.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DasPhero/GaimesUpdater/issues"
+  },
+  "homepage": "https://github.com/DasPhero/GaimesUpdater#readme"
+}
