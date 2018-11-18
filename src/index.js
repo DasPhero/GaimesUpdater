@@ -19,12 +19,13 @@ function updateGames() {
     getCredentials().then(() => {
         return authorize(getCurrentSheet);
     }).then(() => {
-        sheetRows = sheetRows.slice(1);
+        console.log(sheetRows)
         sheetRows.forEach((row, index) => {
             sheetData.push({
                 index: index + 2,
-                bgg: row[0],
-                idealo: row[1]
+                originalPrice: row[0],
+                bgg: row[5],
+                ba: row[6]
             })
         });
     }).then(() => {
@@ -36,7 +37,17 @@ function updateGames() {
                 }).then((score) => {
                     sheetData[row.index - 2].bgg = score
                 });
-                // await new Promise((resolve) => { getGamePrice(row.idealo, resolve) }).then((price) => { sheetData[row.index - 2].idealo = price });
+                await new Promise((resolve) => { 
+                    getGamePrice(row.ba, resolve) 
+                }).then((price) => { 
+                    if(price != "0"){
+                        sheetData[row.index - 2].ba = price
+                    }
+                    else{
+                        sheetData[row.index - 2].ba = sheetData[row.index - 2].originalPrice.slice(0, sheetData[row.index - 2].originalPrice.indexOf("€") - 1);
+                        console.log(sheetData[row.index - 2])
+                    }
+                });
                 bggCalls++;
                 if (bggCalls === sheetData.length) {
                     prom();
@@ -45,17 +56,10 @@ function updateGames() {
         })
     }).then(() => {
         let scoreArray = sheetData.map(row => {
-            return [row.bgg.replace(".", ",")];
+            return [row.ba, row.bgg.replace(".", ",")];
         })
         return authorize(writeScoreToTable, scoreArray);
     })
-    // .then(() => {
-    //     let priceArray = sheetData.map(row => {
-    //         return [row.idealo];
-    //     })
-    //     console.log(priceArray)
-    //     return authorize(writePriceToTable, priceArray);
-    // })
     .then(() => {
         authorize(sortTable);
     });
@@ -136,12 +140,13 @@ function getCurrentSheet(auth, params, resolve) {
     });
     let options = {
         spreadsheetId: '1kMyNw3JYanUGsYIKsXEC--mz049cACOdfjvEBcBQiQA',
-        range: 'G:H',
+        range: 'B:H',
     }
 
     sheets.spreadsheets.values.get(options, (err, res) => {
         if (err) return console.log('The API returned an error: ' + err);
         sheetRows = res.data.values;
+        sheetRows = sheetRows.slice(1);
         if (!sheetRows.length) {
             console.log('No data found.');
         }
@@ -168,32 +173,23 @@ function getGameScore(bggId, resolve) {
 }
 
 function getGamePrice(itemId, resolve) {
-    axios.get(`https://www.idealo.de/preisvergleich/Typ/${itemId}`)
+    axios.get(`https://www.brettspiel-angebote.de/widget/?gameId=${itemId}`)
         .then(response => {
-            idealoPage = response.data;
-            resolve(extractPrice(idealoPage))
+            bAPage = response.data;
+            resolve(extractPrice(bAPage))
         })
-        .catch(error => {
-            if (error && error.response) {
-                statusCode = error.response.status;
-                if (statusCode > 300) {
-                    axios.get(`https://www.idealo.de/preisvergleich/OffersOfProduct/${itemId}`)
-                        .then(response => {
-                            idealoPage = response.data;
-                            resolve(extractPrice(idealoPage))
-                        })
-                        .catch(error => {
-                            resolve(undefined);
-                        });
-                }
-            }
-        });
-}
+    }
 
 function extractPrice(pageData) {
-    let $ = cheerio.load(idealoPage);
-    let priceRange = $('.oopStage-priceRangePrice')[0].children[0].data
-    return priceRange.slice(0, priceRange.indexOf("€") - 1);
+    let $ = cheerio.load(pageData);
+    let bestPrice = "0";
+    try{
+        bestPrice = $('.price')[0].children[0].data;
+    }
+    catch(err){
+        return bestPrice;
+    }
+    return bestPrice.slice(0, bestPrice.indexOf("€") - 1)
 }
 
 function writeScoreToTable(auth, scoreData, resolve) {
@@ -204,7 +200,7 @@ function writeScoreToTable(auth, scoreData, resolve) {
 
     var request = {
         spreadsheetId: '1kMyNw3JYanUGsYIKsXEC--mz049cACOdfjvEBcBQiQA',
-        range: `C2`,
+        range: `B2`,
         valueInputOption: 'USER_ENTERED',
         resource: {
             values: scoreData
